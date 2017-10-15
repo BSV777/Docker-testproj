@@ -1,0 +1,29 @@
+version: '2'
+services:
+  mailserver:
+    build:
+      context: ./postfix-dovecot
+      args:
+      - DomainName=domain.test
+      - UserName=mailuser
+      - UserPass=zGRUIBXZpsH1Q
+    ports:
+    - "25:25"
+    - "110:110"
+    - "143:143"
+    - "587:587"
+    volumes:
+    - ./postfix-dovecot/home:/home
+
+  roundcube:
+    image: robbertkl/roundcube
+    depends_on:
+    - mailserver
+    ports:
+    - "80:80"
+    volumes:
+    - ./roundcube:/hostdata
+    environment:
+    - ROUNDCUBE_DEFAULT_HOST=mailserver
+    - ROUNDCUBE_SMTP_SERVER=mailserver
+
